@@ -3,3 +3,6 @@
 /workspace.xml
 # 基于编辑器的 HTTP 客户端请求
 /httpRequests/
+
+# 忽略所有 .pdf 文件
+*.pdf
