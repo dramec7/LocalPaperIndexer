@@ -1,4 +1,4 @@
-package dto;
+package com.xialin.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;

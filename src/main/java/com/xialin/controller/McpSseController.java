@@ -1,11 +1,11 @@
-package controller;
+package com.xialin.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import exception.McpErrorCode;
-import exception.McpException;
+import com.xialin.exception.McpErrorCode;
+import com.xialin.exception.McpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import service.PaperService;
-import tools.McpTool;
+import com.xialin.service.PaperService;
+import com.xialin.tools.McpTool;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,7 +44,7 @@ public class McpSseController {
         this.toolRegistry = tools.stream()
                 .collect(Collectors.toMap(McpTool::getName, tool -> tool));
 
-        log.info("Loaded {} tools: {}", tools.size(), toolRegistry.keySet());
+        log.info("Loaded {} com.xialin.tools: {}", tools.size(), toolRegistry.keySet());
     }
 
 
@@ -56,8 +56,7 @@ public class McpSseController {
 
         // 连接建立后，发送 endpoint 地址给 Client
         try {
-            String endpointEvent = mapper.writeValueAsString(Map.of("endpoint", "/messages"));
-            activeEmitter.send(SseEmitter.event().name("endpoint").data(endpointEvent));
+            activeEmitter.send(SseEmitter.event().name("endpoint").data("/messages"));
             log.info("Endpoint sent to client");
         } catch (Exception e) {
             log.info("Fail to send endpoint to client: {}", e.getMessage());
@@ -96,7 +95,19 @@ public class McpSseController {
             Object result = processRequest(method, request.get("params"));
 
             // 发送成功响应
-            sendResponse(id, result);
+            if (id != null && !id.isNull()) {
+                ObjectNode response = mapper.createObjectNode();
+                response.put("jsonrpc", "2.0");
+                response.set("id", id);
+                response.putPOJO("result", result);
+
+                if (activeEmitter != null) {
+                    activeEmitter.send(SseEmitter.event().name("message").data(response.toString()));
+                    log.info("Sent response for id: {}", id);
+                }
+            } else {
+                log.info("Processed notification: {}, no response sent.", method);
+            }
 
         } catch (McpException e) {
             // 捕获业务层明确抛出的错误 (比如：文件不存在，参数错误)
@@ -175,9 +186,8 @@ public class McpSseController {
                 return "pong";
 
             default:
-                log.error("Unsupported method: {}", method);
+                throw new McpException(McpErrorCode.METHOD_NOT_FOUND, "Method not found: " + method);
         }
-        return null;
     }
 
     private ObjectNode handleInitialize(JsonNode params) {
@@ -186,12 +196,12 @@ public class McpSseController {
         ObjectNode result = mapper.createObjectNode();
         result.put("protocolVersion", "2024-11-05");
 
-        ObjectNode serverInfo = result.putObject("server");
+        ObjectNode serverInfo = result.putObject("serverInfo");
         serverInfo.put("name", "spring-boot-paper-sse-server");
         serverInfo.put("version", "1.0.0");
 
         ObjectNode capabilities = result.putObject("capabilities");
-        // 声明支持 tools，且支持通知
+        // 声明支持 com.xialin.tools，且支持通知
         capabilities.putObject("tools");
         capabilities.putObject("logging"); // 如果你想支持远程日志
 

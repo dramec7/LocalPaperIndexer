@@ -1,4 +1,5 @@
-package exception;
+package com.xialin.exception;
+
 
 public enum McpErrorCode {
 

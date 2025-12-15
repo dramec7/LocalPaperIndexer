@@ -1,7 +1,7 @@
-package service;
+package com.xialin.service;
 
-import exception.McpErrorCode;
-import exception.McpException;
+import com.xialin.exception.McpErrorCode;
+import com.xialin.exception.McpException;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
@@ -13,10 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class PaperService {

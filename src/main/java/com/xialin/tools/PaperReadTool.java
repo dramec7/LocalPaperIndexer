@@ -1,12 +1,14 @@
-package tools;
+package com.xialin.tools;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dto.ReadPaperReq;
+import com.xialin.dto.ReadPaperReq;
 import org.springframework.beans.factory.annotation.Autowired;
-import schema.SchemaHelper;
-import service.PaperService;
+import com.xialin.schema.SchemaHelper;
+import com.xialin.service.PaperService;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PaperReadTool implements McpTool {
 
     @Autowired

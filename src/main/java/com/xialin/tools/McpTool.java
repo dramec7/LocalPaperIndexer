@@ -1,7 +1,9 @@
-package tools;
+package com.xialin.tools;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.stereotype.Component;
 
+@Component
 public interface McpTool {
     // 工具名称
     String getName();

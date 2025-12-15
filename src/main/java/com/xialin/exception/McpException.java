@@ -1,4 +1,5 @@
-package exception;
+package com.xialin.exception;
+
 
 public class McpException extends RuntimeException {
 
