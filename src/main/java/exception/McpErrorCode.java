@@ -10,9 +10,11 @@ public enum McpErrorCode {
     INTERNAL_ERROR(-32603, "Internal error"),
 
     // 自定义业务错误 (-32000 到 -32099)
+    TOOL_NOT_FOUND(-32000, "Tool not found"),
     FILE_NOT_FOUND(-32001, "File or directory not found"),
     PERMISSION_DENIED(-32002, "Permission denied"),
-    READ_TIMEOUT(-32003, "Operation timed out");
+    READ_TIMEOUT(-32003, "Operation timed out"),
+    TOOL_EXECUTION_FAILED(-32004, "Tool execution failed");
 
     private final int code;
     private final String message;

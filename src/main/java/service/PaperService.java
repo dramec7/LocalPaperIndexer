@@ -6,6 +6,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Component
 public class PaperService {
 
     /**
@@ -71,43 +73,13 @@ public class PaperService {
 
         } catch (InvalidPasswordException e) {
             // 捕获密码错误
-            throw new McpException(McpErrorCode.PERMISSION_DENIED,
-                    "PDF is encrypted: " + e.getMessage());
+            throw new McpException(McpErrorCode.PERMISSION_DENIED, "PDF is encrypted: " + e.getMessage());
 
         } catch (IOException e) {
             // 捕获其他 IO 错误（如文件损坏、被占用）
-            throw new McpException(McpErrorCode.INTERNAL_ERROR,
-                    "Failed to read PDF file: " + e.getMessage());
+            throw new McpException(McpErrorCode.INTERNAL_ERROR, "Failed to read PDF file: " + e.getMessage());
         }
     }
 
-    public List<String> listPdfFiles(String directoryPath) {
-        Path dir = Paths.get(directoryPath);
 
-        // 1. 显式校验并在失败时抛出自定义异常
-        if (!Files.exists(dir)) {
-            // 告诉 Agent：你给我的路径不存在
-            throw new McpException(McpErrorCode.FILE_NOT_FOUND,
-                    "Directory does not exist: " + directoryPath);
-        }
-
-        if (!Files.isDirectory(dir)) {
-            // 告诉 Agent：这不是一个文件夹
-            throw new McpException(McpErrorCode.INVALID_PARAMS,
-                    "Path is not a directory: " + directoryPath);
-        }
-
-        try (Stream<Path> stream = Files.list(dir)) {
-            return stream
-                    .filter(path -> !Files.isDirectory(path))
-                    .map(Path::toAbsolutePath)
-                    .map(Path::toString)
-                    .filter(name -> name.toLowerCase().endsWith(".pdf"))
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            // 2. 将底层的 IOException 包装成 Agent 能理解的 Internal Error
-            throw new McpException(McpErrorCode.INTERNAL_ERROR,
-                    "IO Error accessing path: " + e.getMessage());
-        }
-    }
 }
