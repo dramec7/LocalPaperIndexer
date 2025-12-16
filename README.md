@@ -19,8 +19,6 @@
 
 **VS Code Cline / Claude Desktop 配置**
 
-编辑你的 MCP 配置文件：
-
 ```JSON
 {
   "mcpServers": {
